@@ -1,122 +1,191 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Unity WebGL Player | ARtest</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-  </head>
-  <body>
+</head>
+
+<body>
     <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
+        <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
+        <div id="unity-loading-bar">
+            <div id="unity-logo"></div>
+            <div id="unity-progress-bar-empty">
+                <div id="unity-progress-bar-full"></div>
+            </div>
         </div>
-      </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">ARtest</div>
-      </div>
+        <div id="unity-warning"> </div>
+        <div id="unity-footer">
+            <div id="unity-webgl-logo"></div>
+            <div id="unity-fullscreen-button"></div>
+            <div id="unity-build-title">ARtest</div>
+        </div>
     </div>
     <script>
 
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-      var warningBanner = document.querySelector("#unity-warning");
+        var container = document.querySelector("#unity-container");
+        var canvas = document.querySelector("#unity-canvas");
+        var loadingBar = document.querySelector("#unity-loading-bar");
+        var progressBarFull = document.querySelector("#unity-progress-bar-full");
+        var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+        var warningBanner = document.querySelector("#unity-warning");
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
-      function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
+        // Shows a temporary message banner/ribbon for a few seconds, or
+        // a permanent error message on top of the canvas if type=='error'.
+        // If type=='warning', a yellow highlight color is used.
+        // Modify or remove this function to customize the visually presented
+        // way that non-critical warnings and error messages are presented to the
+        // user.
+        function unityShowBanner(msg, type) {
+            function updateBannerVisibility() {
+                warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+            }
+            var div = document.createElement('div');
+            div.innerHTML = msg;
+            warningBanner.appendChild(div);
+            if (type == 'error') div.style = 'background: red; padding: 10px;';
+            else {
+                if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+                setTimeout(function () {
+                    warningBanner.removeChild(div);
+                    updateBannerVisibility();
+                }, 5000);
+            }
             updateBannerVisibility();
-          }, 5000);
         }
-        updateBannerVisibility();
-      }
 
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/AR1026.loader.js";
-      var config = {
-        dataUrl: buildUrl + "/AR1026.data",
-        frameworkUrl: buildUrl + "/AR1026.framework.js",
-        codeUrl: buildUrl + "/AR1026.wasm",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "ARtest",
-        productVersion: "0.1",
-        showBanner: unityShowBanner,
-      };
+        var buildUrl = "Build";
+        var loaderUrl = buildUrl + "/AR1026.loader.js";
+        var config = {
+            dataUrl: buildUrl + "/AR1026.data",
+            frameworkUrl: buildUrl + "/AR1026.framework.js",
+            codeUrl: buildUrl + "/AR1026.wasm",
+            streamingAssetsUrl: "StreamingAssets",
+            companyName: "DefaultCompany",
+            productName: "ARtest",
+            productVersion: "0.1",
+            showBanner: unityShowBanner,
+        };
 
-      // By default, Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
+        // By default, Unity keeps WebGL canvas render target size matched with
+        // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+        // Set this to false if you want to decouple this synchronization from
+        // happening inside the engine, and you would instead like to size up
+        // the canvas DOM size and WebGL render target sizes yourself.
+        // config.matchWebGLToCanvasSize = false;
 
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            // Mobile device style: fill the whole browser client area with the game canvas:
 
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-        container.className = "unity-mobile";
-        canvas.className = "unity-mobile";
+            var meta = document.createElement('meta');
+            meta.name = 'viewport';
+            meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+            document.getElementsByTagName('head')[0].appendChild(meta);
+            container.className = "unity-mobile";
+            canvas.className = "unity-mobile";
 
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
+            // To lower canvas resolution on mobile devices to gain some
+            // performance, uncomment the following line:
+            // config.devicePixelRatio = 1;
 
 
-      } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+        } else {
+            // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
 
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
-      }
+            canvas.style.width = "960px";
+            canvas.style.height = "600px";
+        }
 
-      loadingBar.style.display = "block";
+        loadingBar.style.display = "block";
 
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = 100 * progress + "%";
-              }).then((unityInstance) => {
+        var script = document.createElement("script");
+        script.src = loaderUrl;
+        script.onload = () => {
+            createUnityInstance(canvas, config, (progress) => {
+                progressBarFull.style.width = 100 * progress + "%";
+            }).then((unityInstance) => {
+                // --- 修正開始 ---
+                window.unityInstance = unityInstance;
+                // --- 修正結束 ---
                 loadingBar.style.display = "none";
                 fullscreenButton.onclick = () => {
-                  unityInstance.SetFullscreen(1);
+                    unityInstance.SetFullscreen(1);
                 };
-              }).catch((message) => {
+            }).catch((message) => {
                 alert(message);
-              });
-            };
+            });
+        };
 
-      document.body.appendChild(script);
+        document.body.appendChild(script);
 
+        // 來自 jakedowns/xreal-webxr 的核心解析邏輯
+        function parseXrealIMU(data) {
+            // data 是一個 DataView 或 Uint8Array
+            const view = new DataView(data.buffer);
+
+            // 1. 提取原始資料 (以 32位元整數讀取)
+            // 注意：小端位元序 (Little-Endian) 通常為 true
+            let rawX = view.getInt32(2, true);
+            let rawY = view.getInt32(6, true);
+            let rawZ = view.getInt32(10, true);
+            let rawW = view.getInt32(14, true);
+
+            // 2. 轉換為浮點數 (Scale Factor 視韌體版本而定，常用為 16384.0)
+            let x = rawX / 16384.0;
+            let y = rawY / 16384.0;
+            let z = rawZ / 16384.0;
+            let w = rawW / 16384.0;
+
+            // 3. 歸一化 (Normalization) 確保四元數長度為 1
+            const magnitude = Math.sqrt(x * x + y * y + z * z + w * w);
+            if (magnitude > 0) {
+                x /= magnitude; y /= magnitude; z /= magnitude; w /= magnitude;
+            }
+
+            // 4. 返回符合 Unity Quaternion 結構的物件
+            return { x: x, y: y, z: z, w: w };
+        }
+
+        async function connectXreal() {
+            try {
+                // 注意：確保你的頁面已經引入了包含 parseXrealIMU 的 JS 檔
+                const devices = await navigator.hid.requestDevice({
+                    filters: [{ vendorId: 0x3318 }]
+                });
+
+                if (devices.length > 0) {
+                    const device = devices[0];
+                    await device.open();
+                    console.log("XREAL 已連線");
+
+                    device.oninputreport = (event) => {
+                        const { data } = event;
+
+                        // 呼叫外部解析函式
+                        if (typeof parseXrealIMU === 'function') {
+                            const q = parseXrealIMU(data);
+
+                            if (window.unityInstance) {
+                                const jsonStr = JSON.stringify({ x: q.x, y: q.y, z: q.z, w: q.w });
+                                window.unityInstance.SendMessage('XrealManager', 'UpdateRotationFromJS', jsonStr);
+                            }
+                        } else {
+                            console.error("錯誤：找不到 parseXrealIMU 函式，請確認是否引入了驅動 JS 檔");
+                        }
+                    };
+                }
+            } catch (error) {
+                console.error("連線失敗:", error);
+            }
+        }
     </script>
-  </body>
+    <button onclick="connectXreal()" style="position:absolute; top:10px; left:10px; z-index:999;">
+        連接 XREAL 眼鏡
+    </button>
+</body>
+
 </html>
