@@ -171,7 +171,15 @@
         }
 
         async function connectXreal() {
+            // 新增環境檢查 Log
+            if (!("hid" in navigator)) {
+                console.error("[JS Error] 你的瀏覽器不支援 WebHID。請確保使用 Chrome/Edge 並使用 HTTPS 連線。");
+                alert("瀏覽器不支援 WebHID，請檢查 HTTPS 或 Chrome Flags 設定。");
+                return;
+            }
+            
             try {
+                console.log("正在請求 HID 裝置...");
                 // 注意：確保你的頁面已經引入了包含 parseXrealIMU 的 JS 檔
                 const devices = await navigator.hid.requestDevice({
                     filters: [{ vendorId: 0x3318 }]
@@ -199,7 +207,7 @@
                     };
                 }
             } catch (error) {
-                console.error("連線失敗:", error);
+                console.error("連線失敗:", error.name + " - " + error.message);
             }
         }
     </script>
